@@ -26,14 +26,13 @@ for i in sys.argv[2:]:
     if i.lower() == "z":
         rotate_z()
 
-if "tmp" in sys.argv:
-    out = getTempStepFile()
-else:
-    out = getStepFile()
-        
-FreeCAD.Console.PrintMessage("Exporting: " + out + "\n")
-saveSTEP(out)
-
 if "tmp" not in sys.argv:
+    out = getStepFile()        
+    FreeCAD.Console.PrintMessage("Exporting: " + out + "\n")
+    saveSTEP(out)
     exit()
-
+    
+else:
+    out = getTempStepFile()
+    FreeCAD.Console.PrintMessage("Exporting: " + out + "\n")
+    saveSTEP(out)
