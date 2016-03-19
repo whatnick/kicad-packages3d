@@ -1,3 +1,6 @@
 .wings~
 .tmp
 .pdf
+scripts/*.stp
+scripts/*.step
+scripts/tmp_**

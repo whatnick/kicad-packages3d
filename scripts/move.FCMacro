@@ -17,22 +17,27 @@ Gui.activeDocument().activeView().viewTop()
 oselection = Gui.Selection.getSelection()
 bb=App.ActiveDocument.ActiveObject.Shape.BoundBox
 
+"""
+Move the step file by the given amount(s)
+"""
+
 #extract other arguments
 for i in sys.argv[2:]:
-    if i.lower() == "x":
-        rotate_x()
-    if i.lower() == "y":
-        rotate_y()
-    if i.lower() == "z":
-        rotate_z()
-
-if "tmp" not in sys.argv:
-    out = getStepFile()        
-    FreeCAD.Console.PrintMessage("Exporting: " + out + "\n")
-    saveSTEP(out)
-    exit()
+    arg = i.lower().split("=")
     
-else:
-    out = getTempStepFile()
-    FreeCAD.Console.PrintMessage("Exporting: " + out + "\n")
-    saveSTEP(out)
+    if len(arg) == 2:
+        try:
+            a = str(arg[0])
+            d = float(arg[1])
+            
+            if a == "x":
+                moveAll(d,0,0)
+            if a == "y":
+                moveAll(0,d,0)
+            if a == "z":
+                moveAll(0,0,d)
+            
+        except:
+            pass
+            
+saveStepAndClose()

@@ -24,12 +24,86 @@ def getStepFile():
     
 def getWRLFile():
     return ".".join(getStepFile().split(".")[:-1]) + ".wrl"
+
+def getBoundBox(obj):
+    return obj.Shape.BoundBox
     
+def addBounds(box, bounds=None):
+    if not bounds:
+        bounds = {}
+        bounds['xMin'] = box.XMin
+        bounds['yMin'] = box.YMin
+        bounds['zMin'] = box.ZMin
+        bounds['xMax'] = box.XMax
+        bounds['yMax'] = box.YMax
+        bounds['zMax'] = box.ZMax
+    else:
+        bounds['xMin'] = min(bounds['xMin'],box.XMin)
+        bounds['xMax'] = max(bounds['xMax'],box.XMax)
+        
+        bounds['yMin'] = min(bounds['yMin'],box.YMin)
+        bounds['yMax'] = max(bounds['yMax'],box.YMax)
+        
+        bounds['zMin'] = min(bounds['zMin'],box.ZMin)
+        bounds['zMax'] = max(bounds['zMax'],box.ZMax)
+
+    return bounds
+        
+#get the bounding box (of ALL components in a group)
+def getBounds():
+
+    objs = getAll()
+    
+    bounds = addBounds(getBoundBox(objs[0]))
+    
+    for obj in objs[1:]:
+        bounds = addBounds(getBoundBox(obj),bounds)
+        
+    return bounds
+            
+#align the left-x side of the part to zero
+def alignXLeft():
+    moveAll(-getBounds()['xMin'],0,0)
+    
+def alignXRight():
+    moveAll(-getBounds()['xMax'],0,0)
+    
+def alignXMiddle():
+    b = getBounds()
+    x = (b['xMin'] + b['xMax']) / 2
+    moveAll(-x,0,0)
+    
+def alignYMiddle():
+    b = getBounds()
+    x = (b['yMin'] + b['yMax']) / 2
+    moveAll(0,-y,0)
+    
+def alignZMiddle():
+    b = getBounds()
+    z = (b['zMin'] + b['zMax']) / 2
+    moveAll(0,0,-z)
+    
+#align the TOP (Y) to the x axis
+def alignYTop():
+    moveAll(0,-getBounds()['yMax'],0)
+    
+def alignYBottom():
+    moveAll(0,-getBounds()['yMin'],0)
+    
+def alignZTop():
+    moveAll(0,0,-getBounds()['zMax'])
+    
+def alignZBottom():
+    moveAll(0,0,-getBounds()['zMin'])
+    
+def moveAll(x,y,z):
+    Draft.move(getAll(),FreeCAD.Vector(x,y,z))
 
 #find and return all objects
 def getAll():
     return FreeCAD.ActiveDocument.Objects
     
+#scale ALL objects around center (down to inches for KiCAD)
 def scale():
     #scaling factor
     scaling = 1.0 / 2.54
@@ -44,6 +118,18 @@ def saveSTEP(filename):
     objs = getAll()
 
     ImportGui.export(objs,filename)
+    
+    del objs
+    
+#if the "tmp" arg is passed, save with a tmp_ prefix and DO NOT CLOSE!
+def saveStepAndClose():
+    if "tmp" in sys.argv:
+        out = getTempStepFile()
+        saveSTEP(out)
+    else:
+        out = getStepFile()
+        saveSTEP(out)
+        exit()
         
 def saveWRL(filename):
     objs = []
@@ -56,7 +142,8 @@ def saveWRL(filename):
     
     del objs
         
-#rotate 90 degrees across 
+#rotate 90 degrees across a given axis
+#centered around zero
 def rotate(axes):
 
     objs = getAll()

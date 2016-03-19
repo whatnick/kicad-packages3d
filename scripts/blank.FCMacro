@@ -1,0 +1,14 @@
+import FreeCAD, FreeCADGui, Draft
+import Idf
+import ImportGui
+
+import re
+import sys, os , argparse
+import __builtin__
+
+"""
+Just a blank file for testing step2wrl functions
+"""
+
+from step2wrl import *
+
