@@ -1,0 +1,25 @@
+import FreeCAD, FreeCADGui, Draft
+import Idf
+import ImportGui
+
+import re
+import sys, os , argparse
+import __builtin__
+
+from step2wrl import *
+    
+FreeCAD.Console.PrintMessage("Importing: " + getStepFile() + "\n")
+FreeCAD.Console.PrintMessage("Exporting: " + getWRLFile() + "\n")
+
+#Gui.activateWorkbench("PartWorkbench")
+#Gui.SendMsgToActiveView("ViewFit")
+Gui.activeDocument().activeView().viewTop()
+
+oselection = Gui.Selection.getSelection()
+bb=App.ActiveDocument.ActiveObject.Shape.BoundBox
+
+scale()
+saveWRL(getWRLFile())
+
+exit()
+
