@@ -42,7 +42,7 @@ def scale():
         
 def saveSTEP(filename):
     objs = getAll()
-    
+
     ImportGui.export(objs,filename)
         
 def saveWRL(filename):
